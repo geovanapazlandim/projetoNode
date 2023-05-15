@@ -1,9 +1,8 @@
-import prismaCliente from "@prisma/client"
-import { CreateUserService } from "./CreateUserService";
-import {sign} from 'jsonwebtoken'
 
-declare module 'jsonwebtoken';
-interface AuthRequest{
+import { CreateUserService } from "./CreateUserService";
+import prismaClient from "../prisma";
+
+interface AuthRequest {
     bandeira: string;
     numeroCartao: string;
     validadecartao: string;
@@ -11,19 +10,17 @@ interface AuthRequest{
     dataExpedicao: string
 }
 
-class AuthUserService{
-    async execute({bandeira, numeroCartao, validadecartao, codigo, dataExpedicao}: AuthRequest){
-        const user = await prismaCliente.cartao.findFirst({
-            where:{
+class AuthUserService {
+    async execute({ bandeira, numeroCartao, validadecartao, codigo, dataExpedicao }: AuthRequest) {
+        const user = await prismaClient.cartao.findFirst({
+            where: {
                 codigo: codigo
             }
         })
-        if(!user){
+        if (!user) {
             throw new Error("Código de cartão inválido");
         }
-       
     }
-    
 }
 
-export {AuthUserService}
+export { AuthUserService }
