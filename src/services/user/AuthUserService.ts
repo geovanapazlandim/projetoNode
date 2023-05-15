@@ -1,6 +1,9 @@
-
+import prismaClient from "../../prisma";
+import { compare } from "bcryptjs";
 import { CreateUserService } from "./CreateUserService";
-import prismaClient from "../prisma";
+import {sign} from 'jsonwebtoken'
+
+
 
 interface AuthRequest {
     bandeira: string;
@@ -20,7 +23,22 @@ class AuthUserService {
         if (!user) {
             throw new Error("Código de cartão inválido");
         }
+        const codigoMatch = await compare(codigo, user.codigo);
+        if (!codigoMatch) {
+            throw new Error("Código de cartão incorreto.")
+        }
+        const token = sign(
+            {
+                codigo: user.codigo,
+            },
+            process.env.JWT_SECRET,
+            {
+                subject: user.id,
+                expiresIn: '5m'
+            }
+        )
     }
+
 }
 
 export { AuthUserService }
